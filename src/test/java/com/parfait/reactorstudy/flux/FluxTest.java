@@ -3,6 +3,8 @@ package com.parfait.reactorstudy.flux;
 import java.time.Duration;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Schedulers;
 
@@ -62,6 +64,14 @@ public class FluxTest {
     }
 
     @Test
+    public void flatMap() throws Exception {
+        Flux.range(1, 10)
+            .flatMap(n -> Flux.just(n, n * 10, n * 100))
+            .map(String::valueOf)
+            .subscribe(log::info);
+    }
+
+    @Test
     public void filter() throws Exception {
         Flux.just("Hello", "World", "I am", "a Programmer!")
             .filter(word -> word.length() > 4)
@@ -99,5 +109,39 @@ public class FluxTest {
     private Flux<String> getName() {
         return Flux.just("a", "b", "c")
                    .delayElements(Duration.ofMillis(100L));
+    }
+
+    @Test
+    public void backPressure() throws InterruptedException {
+        Flux.range(1, 6)
+            .log()
+            .subscribe(new Subscriber<Integer>() {
+                private Subscription s;
+                int count;
+
+                @Override
+                public void onSubscribe(Subscription s) {
+                    this.s = s;
+                    s.request(3);
+                }
+
+                @Override
+                public void onNext(Integer num) {
+                    count++;
+                    if (count % 3 == 0) {
+                        s.request(3);
+                    }
+                }
+
+                @Override
+                public void onError(Throwable t) {
+
+                }
+
+                @Override
+                public void onComplete() {
+
+                }
+            });
     }
 }
