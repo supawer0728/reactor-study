@@ -6,16 +6,15 @@ import com.parfait.reactorstudy.api.ReactiveApiClient;
 import com.parfait.reactorstudy.main.model.Banner;
 import com.parfait.reactorstudy.main.model.HomeDto;
 import com.parfait.reactorstudy.main.model.Menu;
+import java.time.Duration;
+import java.util.Collections;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
-
-import java.time.Duration;
-import java.util.Collections;
-import java.util.List;
 
 @Slf4j
 @RestController
@@ -45,11 +44,6 @@ public class MainController {
                                                   .timeout(Duration.ofSeconds(3))
                                                   .doOnError(e -> log.warn(e.getMessage(), e))
                                                   .onErrorReturn(Collections.singletonList(Menu.DEFAULT));
-//                                                  .onErrorResume((e) -> {
-//                                                      log.error(e.getMessage(), e);
-//                                                      return Mono.just(Collections.singletonList(Menu.DEFAULT));
-//                                                  });
-
 
         return Mono.zip(banners, menus, HomeDto::new);
     }

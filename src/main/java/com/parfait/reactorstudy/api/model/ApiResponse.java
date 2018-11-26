@@ -2,7 +2,6 @@ package com.parfait.reactorstudy.api.model;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.io.IOException;
 import java.io.UncheckedIOException;
 
@@ -15,6 +14,7 @@ public abstract class ApiResponse<T> {
     }
 
     protected abstract TypeReference<T> getTypeReference();
+
     public T toObject(ObjectMapper objectMapper) {
 
         try {
@@ -22,5 +22,9 @@ public abstract class ApiResponse<T> {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+    }
+
+    public String toJson() {
+        return data;
     }
 }

@@ -6,12 +6,13 @@ import com.parfait.reactorstudy.api.model.MenuListResponse;
 import com.parfait.reactorstudy.main.model.Banner;
 import com.parfait.reactorstudy.main.model.Menu;
 import io.github.benas.randombeans.api.EnhancedRandom;
+import java.time.Duration;
+import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-import java.time.Duration;
-import java.util.List;
-
+@Slf4j
 public class ReactiveApiClient {
 
     private final ObjectMapper objectMapper;
@@ -33,6 +34,7 @@ public class ReactiveApiClient {
                      .syncBody(menuList)
                      .retrieve()
                      .bodyToMono(MenuListResponse.PARAMETERIZED_TYPE_REFERENCE)
+                     .doOnNext(response -> log.info("json: {}", response.toJson()))
                      .map(response -> response.toObject(objectMapper));
     }
 
@@ -43,6 +45,7 @@ public class ReactiveApiClient {
                      .syncBody(bannerList)
                      .retrieve()
                      .bodyToMono(BannerListResponse.PARAMETERIZED_TYPE_REFERENCE)
+                     .doOnNext(response -> log.info("json: {}", response.toJson()))
                      .map(response -> response.toObject(objectMapper));
     }
 }
